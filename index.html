@@ -143,7 +143,7 @@ const SC={
   {q:["What are you going to do tomorrow?","What is your plan for tomorrow?"],pat:/\b(i'm going to|i am going to|i will|i'll)\b/,hint:"「I'm going to ~」で予定を言おう",ex:"I'm going to study English."}]}
 };
 if(typeof SALON_SC!=='undefined'){const o=Object.assign({},SALON_SC,SC);Object.keys(SC).forEach(k=>delete SC[k]);Object.assign(SC,o)}
-let scKey=Object.keys(SC)[0],si=0,tries=0,curStep=null;
+let scKey=Object.keys(SC)[0],si=0,tries=0,curStep=null,curQ='',forced=null;
 
 function tab(t){
  activeTab=t;
@@ -156,10 +156,11 @@ let activeTab='chat';
 const row=$('scRow');
 Object.keys(SC).forEach(k=>{const b=document.createElement('button');b.className='chip'+(k==scKey?' on':'');b.textContent=SC[k].n;b.onclick=()=>{scKey=k;document.querySelectorAll('#scRow .chip').forEach(c=>c.classList.remove('on'));b.classList.add('on');startScen()};row.appendChild(b)});
 
-function startScen(){si=0;tries=0;$('chat').innerHTML='';askStep()}
+function startScen(){si=0;tries=0;forced=null;$('chat').innerHTML='';askStep()}
 function askStep(){
  curStep=SC[scKey].steps[si];tries=0;
- const q=curStep.q[Math.floor(Math.random()*curStep.q.length)];
+ const q=forced||curStep.q[Math.floor(Math.random()*curStep.q.length)];
+ forced=null;curQ=q;
  msg(q,'ai',curStep.hint);
 }
 function msg(t,who,hint){
@@ -171,19 +172,19 @@ function msg(t,who,hint){
 }
 function onChat(spoken){
  msg(spoken,'us');
- const ok=curStep.pat.test(norm(spoken));
- if(ok){count();advance("👍 Nice!")}
+ const n=norm(spoken),ok=curStep.pat.test(n);
+ if(ok){count();const h=(curStep.re||[]).find(r=>r.p.test(n));forced=h?h.say:null;advance(1)}
  else{
   tries++;mark('chat:'+curStep.hint,false);
-  if(tries>=2){msg("Here's an example: "+curStep.ex,'ai');setTimeout(advance,2600)}
-  else setTimeout(()=>msg("Almost! Try the pattern again 😊",'ai',curStep.hint),700);
+  if(tries>=2){msg("Here's an example: "+curStep.ex,'ai');setTimeout(advance,4200)}
+  else setTimeout(()=>msg("Sorry? "+curQ,'ai',curStep.hint),700);
  }
 }
 function advance(pre){
  si++;
  setTimeout(()=>{
   if(si<SC[scKey].steps.length)askStep();
-  else msg("Great job! You finished this conversation! 🎉 他のシナリオも試そう。",'ai');
+  else{const done=()=>msg("Great job! You finished this conversation! 🎉 他のシナリオも試そう。",'ai');if(forced){msg(forced,'ai');forced=null;setTimeout(done,2800)}else done()}
  },pre?1000:300);
 }
 

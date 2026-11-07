@@ -101,3 +101,30 @@ const SALON_SC={
   {q:["Have you tried any Filipino food?","What Filipino food do you like?"],pat:/\b(yes|no|tried|adobo|sinigang|favorite|delicious|recommend|good|like|love|what)\b/,hint:"食べ物の話をしよう",ex:"Yes! I like adobo. What do you recommend?"},
   {q:["You should try halo-halo!","Please try halo-halo. It's very good."],pat:/\b(sounds|will|try|thanks|thank|great|good|sure|definitely|looks)\b/,hint:"お礼を言って会話を締めよう",ex:"That sounds good! I'll try it. Thank you!"}]}
 };
+
+// 返答の分岐：あなたの言葉に合わせて、次のお客様のセリフが変わる
+const SALON_RE={
+ sal1:[{},{},
+  {re:[{p:/\bshoulder/,say:"Yes, about to my shoulders. I wash it every day, and I don't style it much."},{p:/\b(inch|inches|cm|centimeters)\b/,say:"Okay, that sounds right. I wash it every day, and I don't style it much."}]},
+  {re:[{p:/\blayer/,say:"Layers? Sounds nice! How long will it take?"}]},
+  {re:[{p:/\b(800|eight hundred)\b/,say:"800 pesos? Okay, that's fine. Thank you!"}]}],
+ sal2:[{},{},{},
+  {re:[{p:/\bgcash\b/,say:"GCash, please. Here you go. Thank you!"},{p:/\b(cash|card)\b/,say:"Cash, please. Here you go. Thank you!"}]},{}],
+ sal3:[{},{},
+  {re:[{p:/\b(two|2)\b/,say:"Only two weeks? Hmm. How can I keep the color?"},{p:/\b(month|months|four|4|six|6)\b/,say:"Okay, that's good. How can I keep the color?"}]},
+  {re:[{p:/\bpurple\b/,say:"Purple shampoo? Okay, I'll buy one. Thank you!"}]}],
+ sal4:[{},{},
+  {re:[{p:/\b(three|3)\b/,say:"Three months? That's great! How should I take care of it at home?"}]},
+  {re:[{p:/\b(brush|comb)\b/,say:"Okay, no brushing when it's wet. Thank you!"}]}],
+ sal5:[{},{},{},
+  {re:[{p:/\b(free|no charge|no extra|not charge|don't charge)\b/,say:"Free? Thank you so much. It looks better now!"},{p:/\b(pesos|peso)\b/,say:"Oh, I have to pay more? Okay... It looks better now."}]},{}],
+ sal6:[{},{},
+  {re:[{p:/\b(fully|booked|full|sorry)\b/,say:"Oh, it's full? Okay, then Sunday at two. Please book it."},{p:/\b(opening|available|free|yes|have)\b/,say:"Great! Please book it."}]},{},{}],
+ sal7:[{},{},{},
+  {re:[{p:/\b(hope|enjoy|great time)\b/,say:"Thank you! I will."}]}],
+ sal8:[{},{},
+  {re:[{p:/\b(friendly|people)\b/,say:"Aww, thank you! Have you tried any Filipino food?"},{p:/\bfood\b/,say:"The food is great, right? Have you tried any Filipino food?"}]},
+  {re:[{p:/\badobo\b/,say:"Adobo is my favorite too! You should try halo-halo!"},{p:/\bsinigang\b/,say:"Sinigang! Nice! You should try halo-halo too!"}]},
+  {re:[{p:/\b(thank|thanks)\b/,say:"You're welcome! Enjoy it!"}]}]
+};
+Object.keys(SALON_RE).forEach(k=>SALON_RE[k].forEach((r,i)=>Object.assign(SALON_SC[k].steps[i],r)));
