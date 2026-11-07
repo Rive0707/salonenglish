@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>英語スピーキング特訓</title>
+<style>
+:root{--p:#2563eb;--bg:#f8fafc;--card:#fff;--ai:#e0f2fe;--us:#dcfce7;--tx:#0f172a;--mu:#64748b;--bd:#e2e8f0}
+@media(prefers-color-scheme:dark){:root{--bg:#0b1120;--card:#111827;--ai:#0c4a6e;--us:#14532d;--tx:#f1f5f9;--mu:#94a3b8;--bd:#1f2937}}
+*{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+body{background:var(--bg);color:var(--tx);margin:0;padding:10px;display:flex;justify-content:center}
+.c{width:100%;max-width:680px;background:var(--card);border-radius:16px;padding:14px;box-shadow:0 8px 24px rgba(0,0,0,.08);display:flex;flex-direction:column;height:calc(100dvh - 20px)}
+h1{font-size:1.1rem;margin:0;text-align:center}
+.stats{display:flex;justify-content:space-around;font-size:.8rem;color:var(--mu);margin:8px 0;padding:6px;background:var(--bg);border-radius:8px}
+.tabs{display:flex;gap:6px;background:var(--bg);padding:4px;border-radius:10px;margin-bottom:10px}
+.tabs button{flex:1;padding:9px;border:0;border-radius:8px;background:none;font-weight:700;color:var(--mu);cursor:pointer}
+.tabs button.on{background:var(--card);color:var(--p);box-shadow:0 2px 5px rgba(0,0,0,.08)}
+.pane{display:none;flex:1;flex-direction:column;min-height:0}.pane.on{display:flex}
+.row{display:flex;gap:6px;overflow-x:auto;margin-bottom:8px}
+.chip{padding:6px 12px;border-radius:20px;border:1px solid var(--bd);background:var(--card);color:var(--tx);white-space:nowrap;cursor:pointer;font-size:.85rem}
+.chip.on{background:var(--p);color:#fff;border-color:var(--p);font-weight:700}
+.chat{flex:1;overflow-y:auto;padding:10px;border:1px solid var(--bd);border-radius:12px;display:flex;flex-direction:column;gap:10px}
+.m{max-width:85%;padding:10px 14px;border-radius:14px;line-height:1.45;font-size:.95rem}
+.m.ai{background:var(--ai);align-self:flex-start}.m.us{background:var(--us);align-self:flex-end}
+.hb{display:block;margin-top:6px;font-size:.78rem;border:0;background:rgba(0,0,0,.08);color:inherit;padding:3px 8px;border-radius:6px;cursor:pointer}
+.ht{display:block;margin-top:6px;font-size:.82rem;font-style:italic}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px}
+select{width:100%;padding:8px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-size:.82rem}
+.chk{font-size:.82rem;color:var(--mu);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.card{flex:1;border-left:5px solid var(--p);background:var(--bg);border-radius:12px;padding:16px;text-align:center;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px}
+.dh{font-size:.82rem;color:var(--p)}
+.dt{font-size:1.9rem;font-weight:800;cursor:pointer;word-break:break-word}
+.dt.blur{filter:blur(9px)}
+.dj{font-size:1rem;color:var(--mu)}
+.ab{border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:7px 16px;border-radius:20px;cursor:pointer;font-weight:600}
+.res{display:none;width:100%;padding:10px;border-radius:8px;font-weight:700;font-size:.9rem}
+.res.ok{background:#ecfdf5;color:#065f46}.res.ng{background:#fef2f2;color:#991b1b}
+.nav{display:flex;justify-content:space-between;margin:6px 0}
+.nav button{background:none;border:0;color:var(--p);font-weight:700;cursor:pointer;padding:6px}
+.mic{width:100%;padding:14px;border-radius:12px;border:0;background:var(--p);color:#fff;font-size:1.05rem;font-weight:700;cursor:pointer;margin-top:6px}
+.mic.rec{background:#ef4444;animation:pl 1.4s infinite}
+@keyframes pl{50%{opacity:.7}}
+.st{text-align:center;font-size:.82rem;color:var(--mu);min-height:1.2em;margin:4px 0}
+.tin{display:flex;gap:6px}.tin input{flex:1;padding:8px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx)}
+.tin button{padding:8px 12px;border:0;border-radius:8px;background:var(--p);color:#fff;font-weight:700}
+#start{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:9;text-align:center;padding:20px}
+#start button{padding:16px 34px;font-size:1.1rem;border:0;border-radius:14px;background:var(--p);color:#fff;font-weight:700}
+</style>
+</head>
+<body>
+<div id="start"><h1>🗣️ 英語スピーキング特訓</h1><p style="color:var(--mu)">声を出して、自分で英語を作る練習。<br>Chrome / Safari 推奨</p><button onclick="begin()">▶ はじめる</button></div>
+
+<div class="c">
+<h1>🗣️ 英語スピーキング特訓</h1>
+<div class="stats"><span id="sStreak">🔥 0日連続</span><span id="sToday">✅ 今日 0回</span><span id="sWeak">📌 苦手 0</span></div>
+<div class="tabs"><button class="on" onclick="tab('chat')">🗣️ 会話</button><button onclick="tab('drill')">🎯 練習</button></div>
+
+<div id="pChat" class="pane on">
+ <div class="row" id="scRow"></div>
+ <div class="chat" id="chat"></div>
+</div>
+
+<div id="pDrill" class="pane">
+ <div class="grid"><select id="cat"></select><select id="lv"><option value="kids">Kids 基本</option><option value="adult">Adult 日常</option></select></div>
+ <div class="grid"><select id="show"><option value="full">表示: そのまま</option><option value="blur">表示: ぼかし(耳で)</option><option value="ja">表示: 日本語→英語</option></select>
+ <select id="rate"><option value="0.7">速度: ゆっくり</option><option value="0.9" selected>速度: ふつう</option><option value="1.05">速度: はやい</option></select></div>
+ <label class="chk"><input type="checkbox" id="weakOnly"> 苦手だけ復習する</label>
+ <div class="card">
+  <div class="dh" id="dh"></div>
+  <div class="dj" id="dj"></div>
+  <div class="dt" id="dt"></div>
+  <button class="ab" onclick="speakTarget()">🔊 お手本</button>
+  <div class="res" id="res"></div>
+ </div>
+ <div class="nav"><button onclick="step(-1)">← 前へ</button><button onclick="step(1)">次へ →</button></div>
+</div>
+
+<button id="mic" class="mic">🎤 声を出して話す</button>
+<div class="st" id="st"></div>
+<div class="tin"><input id="ti" placeholder="⌨️ 声が使えない時は文字で入力"><button onclick="sendText()">送信</button></div>
+</div>
+
+<script src="phrases.js"></script>
+<script src="salon.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const norm=s=>s.toLowerCase().replace(/[’']/g,"'").replace(/[^a-z0-9' ]/g,' ').replace(/\s+/g,' ').trim();
+
+/* ---------- 保存 ---------- */
+let S={days:{},weak:{}};
+try{S=Object.assign(S,JSON.parse(localStorage.getItem('eng_v2')||'{}'))}catch(e){}
+const save=()=>{try{localStorage.setItem('eng_v2',JSON.stringify(S))}catch(e){}};
+const dstr=d=>d.toLocaleDateString('sv');
+function count(){const t=dstr(new Date());S.days[t]=(S.days[t]||0)+1;save();stats()}
+function stats(){
+ let d=new Date(),n=0;
+ if(!S.days[dstr(d)])d.setDate(d.getDate()-1);
+ while(S.days[dstr(d)]){n++;d.setDate(d.getDate()-1)}
+ $('sStreak').textContent='🔥 '+n+'日連続';
+ $('sToday').textContent='✅ 今日 '+(S.days[dstr(new Date())]||0)+'回';
+ $('sWeak').textContent='📌 苦手 '+Object.keys(S.weak).length;
+}
+function mark(text,ok){
+ if(ok){if(S.weak[text]){S.weak[text]--;if(S.weak[text]<=0)delete S.weak[text]}}
+ else S.weak[text]=Math.min((S.weak[text]||0)+2,6);
+ save();stats();
+}
+
+/* ---------- 音声 ---------- */
+let voice=null;
+function pickVoice(){const v=speechSynthesis.getVoices().filter(x=>/^en[-_]US/i.test(x.lang));voice=v.find(x=>/samantha|google|aaron|nicky/i.test(x.name))||v[0]||null}
+if('speechSynthesis' in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
+function speak(t){
+ if(!('speechSynthesis' in window))return;
+ speechSynthesis.cancel();
+ const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=parseFloat($('rate').value);if(voice)u.voice=voice;
+ speechSynthesis.speak(u);
+}
+function begin(){$('start').style.display='none';speak(' ');startScen()}
+
+/* ---------- 会話データ ---------- */
+const SC={
+ cafe:{n:'☕ カフェ',steps:[
+  {q:["Hello! Welcome! What do you want today?","Hi there! What would you like to order?"],pat:/\bi (want|would like|'d like)\b/,hint:"「I want ~」で注文しよう",ex:"I want a coffee."},
+  {q:["Great choice! Do you like sweet things?","Nice! Do you like cake or cookies?"],pat:/\bi (like|love)\b/,hint:"「I like ~」で好みを伝えよう",ex:"I like chocolate."},
+  {q:["Do you need anything else, like water?","Anything else? A napkin, maybe?"],pat:/\bi need\b/,hint:"「I need ~」で必要なものを伝えよう",ex:"I need some water."},
+  {q:["Can I get your name for the order?","Where do you want to sit?"],pat:/\b(my name is|i'm|i am|i want|i'll|sit)\b/,hint:"「My name is ~」か「I want ~」で答えよう",ex:"My name is Ryota."}]},
+ hobby:{n:'🎮 趣味',steps:[
+  {q:["What do you like to do on weekends?","What do you do on your days off?"],pat:/\bi (like|love|play|watch|read|go)\b/,hint:"「I like ~」で好きなことを言おう",ex:"I like music."},
+  {q:["Cool! Do you use a computer or phone for that?","Nice! Do you use any app for that?"],pat:/\bi use\b/,hint:"「I use ~」で使うものを言おう",ex:"I use this app."},
+  {q:["What do you want to try next?","What is your next goal?"],pat:/\bi want\b/,hint:"「I want to ~」でやりたいことを言おう",ex:"I want to try something new."}]},
+ work:{n:'🤝 助け合い',steps:[
+  {q:["You look busy! Do you need any help?","Hey, is everything okay? Need a hand?"],pat:/\bi need\b/,hint:"「I need ~」で頼もう",ex:"I need your help."},
+  {q:["Sure! Do you have a plan?","Okay! Do you have any ideas?"],pat:/\bi have\b/,hint:"「I have ~」で状況を伝えよう",ex:"I have an idea."},
+  {q:["I recommend taking a short break first.","Why don't we take a break first?"],pat:/\bi (understand|know|agree)\b/,hint:"「I understand ~」で返そう",ex:"I understand."}]},
+ ask:{n:'❓ 質問する',steps:[
+  {q:["Hi! I'm your friend. Ask me for something!","Hello! Ask me for some help."],pat:/\b(can|could) i\b/,hint:"「Can I ~?」でお願いしてみよう",ex:"Can I have some water?"},
+  {q:["Sure! Now ask me about my hobbies.","Of course! Ask me what I like."],pat:/\bdo you\b/,hint:"「Do you ~?」で質問してみよう",ex:"Do you like music?"},
+  {q:["Yes, I do! Ask me about my weekend plan.","Good question! Ask what I want to do."],pat:/\b(do you|are you|can you|what|where)\b/,hint:"もう1つ質問してみよう",ex:"What do you want to do?"}]},
+ past:{n:'⏪ 過去の話',steps:[
+  {q:["Where did you go last weekend?","Did you go anywhere yesterday?"],pat:/\bi (went|was|stayed)\b/,hint:"「I went to ~」で過去を話そう",ex:"I went to the park."},
+  {q:["Sounds fun! What did you eat?","Nice! What did you have for lunch?"],pat:/\bi (ate|had|made|drank)\b/,hint:"「I had ~」で食べたものを言おう",ex:"I had ramen."},
+  {q:["What are you going to do tomorrow?","What is your plan for tomorrow?"],pat:/\b(i'm going to|i am going to|i will|i'll)\b/,hint:"「I'm going to ~」で予定を言おう",ex:"I'm going to study English."}]}
+};
+if(typeof SALON_SC!=='undefined'){const o=Object.assign({},SALON_SC,SC);Object.keys(SC).forEach(k=>delete SC[k]);Object.assign(SC,o)}
+let scKey=Object.keys(SC)[0],si=0,tries=0,curStep=null;
+
+function tab(t){
+ activeTab=t;
+ document.querySelectorAll('.tabs button').forEach((b,i)=>b.classList.toggle('on',(i==0)==(t=='chat')));
+ $('pChat').classList.toggle('on',t=='chat');$('pDrill').classList.toggle('on',t=='drill');
+ if(t=='drill')showDrill();
+}
+let activeTab='chat';
+
+const row=$('scRow');
+Object.keys(SC).forEach(k=>{const b=document.createElement('button');b.className='chip'+(k==scKey?' on':'');b.textContent=SC[k].n;b.onclick=()=>{scKey=k;document.querySelectorAll('#scRow .chip').forEach(c=>c.classList.remove('on'));b.classList.add('on');startScen()};row.appendChild(b)});
+
+function startScen(){si=0;tries=0;$('chat').innerHTML='';askStep()}
+function askStep(){
+ curStep=SC[scKey].steps[si];tries=0;
+ const q=curStep.q[Math.floor(Math.random()*curStep.q.length)];
+ msg(q,'ai',curStep.hint);
+}
+function msg(t,who,hint){
+ const d=document.createElement('div');d.className='m '+who;d.textContent=t;
+ if(hint){const b=document.createElement('button');b.className='hb';b.textContent='💡 ヒントを見る';
+  b.onclick=()=>{const s=document.createElement('span');s.className='ht';s.textContent=hint;b.replaceWith(s)};d.appendChild(b)}
+ $('chat').appendChild(d);$('chat').scrollTop=1e9;
+ if(who=='ai')speak(t);
+}
+function onChat(spoken){
+ msg(spoken,'us');
+ const ok=curStep.pat.test(norm(spoken));
+ if(ok){count();advance("👍 Nice!")}
+ else{
+  tries++;mark('chat:'+curStep.hint,false);
+  if(tries>=2){msg("Here's an example: "+curStep.ex,'ai');setTimeout(advance,2600)}
+  else setTimeout(()=>msg("Almost! Try the pattern again 😊",'ai',curStep.hint),700);
+ }
+}
+function advance(pre){
+ si++;
+ setTimeout(()=>{
+  if(si<SC[scKey].steps.length)askStep();
+  else msg("Great job! You finished this conversation! 🎉 他のシナリオも試そう。",'ai');
+ },pre?1000:300);
+}
+
+/* ---------- ドリル ---------- */
+const P=(en,ja)=>en+'|'+ja;
+const D=[
+ {c:"アルファベット (A–M)",h:"1文字ずつの音 (a=アッ, b=ブッ)",k:["apple","bus","cat","dog","egg","fish","gorilla","hat","ink","juice","kangaroo","lemon","monkey"],a:["action","business","company","data","event","finance","global","hotel","internet","job","key","local","market"]},
+ {c:"アルファベット (N–Z)",h:"1文字ずつの音 (p=プッ, r=ウル)",k:["nut","octopus","pig","queen","rabbit","sun","tiger","umbrella","van","water","box","yellow","zebra"],a:["network","office","project","quality","report","system","team","unit","value","website","express","yield","zone"]},
+ {c:"マジックe",h:"最後のeは読まず、母音をアルファベット名で読む",k:["cap","cape","kit","kite","hop","hope","cute","make"],a:["make a plan","take a break","save time","drive a car","write a note"]},
+ {c:"2文字母音",h:"ai, ee, oa, oi, oo は特別な音",k:["rain","train","see","green","boat","coat","coin","oil","moon","book"],a:["wait a minute","keep in touch","good idea","choose an option","read a book"]},
+ {c:"子音セット sh/ch/th/ph",h:"2つの子音が混ざる音",k:["ship","shop","chip","cheese","think","three","this","that","phone","photo"],a:["check the schedule","think about it","this afternoon","photo frame","share the info"]},
+ {c:"型 I like ~",h:"〜が好き",k:[P("I like dogs.","犬が好き"),P("I like apples.","りんごが好き"),P("I like this toy.","このおもちゃが好き"),P("I like ice cream.","アイスが好き")],a:[P("I like music.","音楽が好き"),P("I like this color.","この色が好き"),P("I like your idea.","あなたの案が好き"),P("I like working here.","ここで働くのが好き")]},
+ {c:"型 I want ~",h:"〜が欲しい",k:[P("I want some water.","水が欲しい"),P("I want a new toy.","新しいおもちゃが欲しい"),P("I want candy.","あめが欲しい"),P("I want to play.","遊びたい")],a:[P("I want a new bag.","新しいバッグが欲しい"),P("I want more time.","もっと時間が欲しい"),P("I want a cup of coffee.","コーヒーが欲しい"),P("I want to try this.","これを試したい")]},
+ {c:"型 I need ~",h:"〜が必要",k:[P("I need a pencil.","えんぴつが必要"),P("I need help.","助けが必要"),P("I need a hug.","ハグが必要"),P("I need water.","水が必要")],a:[P("I need your help.","あなたの助けが必要"),P("I need a break.","休憩が必要"),P("I need more information.","もっと情報が必要"),P("I need a receipt.","レシートが必要")]},
+ {c:"型 I have ~",h:"〜を持っている／ある",k:[P("I have a dog.","犬を飼っている"),P("I have a question.","質問がある"),P("I have a sister.","姉妹がいる"),P("I have a red ball.","赤いボールを持っている")],a:[P("I have an idea.","案がある"),P("I have enough time.","時間は十分ある"),P("I have an appointment.","予約がある"),P("I have a question.","質問がある")]},
+ {c:"型 I use ~",h:"〜を使う",k:[P("I use this pen.","このペンを使う"),P("I use a computer.","パソコンを使う"),P("I use a spoon.","スプーンを使う"),P("I use this app.","このアプリを使う")],a:[P("I use English at work.","仕事で英語を使う"),P("I use this computer.","このパソコンを使う"),P("I use public transit.","公共交通を使う"),P("I use this app every day.","毎日このアプリを使う")]},
+ {c:"型 I know ~",h:"〜を知っている",k:[P("I know your name.","あなたの名前を知ってる"),P("I know this song.","この曲を知ってる"),P("I know the answer.","答えを知ってる"),P("I know this game.","このゲームを知ってる")],a:[P("I know that person.","あの人を知ってる"),P("I know this place.","この場所を知ってる"),P("I know how to do it.","やり方を知ってる"),P("I know the answer.","答えを知ってる")]},
+ {c:"型 I understand ~",h:"〜を理解している",k:[P("I understand.","わかりました"),P("I understand the rule.","ルールがわかる"),P("I understand English.","英語がわかる"),P("I understand the game.","ゲームがわかる")],a:[P("I understand the problem.","問題を理解してる"),P("I understand your question.","質問を理解してる"),P("I understand the rules.","ルールを理解してる"),P("I understand your situation.","事情はわかります")]},
+ {c:"型 I recommend ~",h:"〜をおすすめする",k:[P("I recommend this book.","この本がおすすめ"),P("I recommend this game.","このゲームがおすすめ"),P("I recommend this snack.","このお菓子がおすすめ"),P("I recommend this toy.","このおもちゃがおすすめ")],a:[P("I recommend this restaurant.","このお店がおすすめ"),P("I recommend this plan.","このプランがおすすめ"),P("I recommend this option.","この選択肢がおすすめ"),P("I recommend taking a break.","休憩をおすすめします")]},
+ {c:"型 I want to ~",h:"〜したい",k:[P("I want to eat.","食べたい"),P("I want to sleep.","寝たい"),P("I want to go home.","家に帰りたい"),P("I want to see you.","会いたい")],a:[P("I want to learn English.","英語を学びたい"),P("I want to travel abroad.","海外旅行したい"),P("I want to build an app.","アプリを作りたい"),P("I want to talk with you.","あなたと話したい")]},
+ {c:"型 Can I ~?",h:"〜してもいい？（お願い）",k:[P("Can I have some juice?","ジュースもらえる？"),P("Can I play now?","もう遊んでいい？"),P("Can I sit here?","ここに座っていい？"),P("Can I go to the toilet?","トイレ行っていい？")],a:[P("Can I ask a question?","質問していいですか"),P("Can I have the menu?","メニューをもらえますか"),P("Can I pay by card?","カードで払えますか"),P("Can I borrow your pen?","ペンを借りていい？")]},
+ {c:"型 Do you ~?",h:"〜しますか？（質問）",k:[P("Do you like cats?","猫は好き？"),P("Do you have a pen?","ペン持ってる？"),P("Do you know this song?","この曲知ってる？"),P("Do you want some water?","水いる？")],a:[P("Do you speak English?","英語を話しますか"),P("Do you have a minute?","少し時間ある？"),P("Do you know this place?","この場所知ってる？"),P("Do you need any help?","手伝いは必要？")]},
+ {c:"型 I went to ~（過去）",h:"〜に行った",k:[P("I went to school.","学校に行った"),P("I went to the park.","公園に行った"),P("I went to the zoo.","動物園に行った"),P("I went home.","家に帰った")],a:[P("I went to the gym.","ジムに行った"),P("I went to a cafe.","カフェに行った"),P("I went to Bangkok.","バンコクに行った"),P("I went shopping.","買い物に行った")]},
+ {c:"型 I'm going to ~（未来）",h:"〜するつもり",k:[P("I'm going to play.","遊ぶつもり"),P("I'm going to eat lunch.","昼ごはんを食べる"),P("I'm going to sleep.","寝るつもり"),P("I'm going to draw.","絵を描くつもり")],a:[P("I'm going to study English.","英語を勉強する"),P("I'm going to work today.","今日は作業する"),P("I'm going to try it.","試してみる"),P("I'm going to call him.","彼に電話する")]}
+];
+if(typeof EXTRA!=='undefined')D.push(...EXTRA);
+if(typeof SALON!=='undefined')D.unshift(...SALON);
+const cat=$('cat');D.forEach((d,i)=>{const o=document.createElement('option');o.value=i;o.textContent=d.c;cat.appendChild(o)});
+let di=0,list=[],timer=null;
+
+function buildList(){
+ const d=D[+cat.value||0],lv=$('lv').value;
+ let items=(lv=='kids'?d.k:d.a).map(s=>{const [en,ja]=s.split('|');return {en,ja:ja||'',h:d.h}});
+ if($('weakOnly').checked){
+  const all=[];D.forEach(x=>[...x.k,...x.a].forEach(s=>{const [en,ja]=s.split('|');if(S.weak[en])all.push({en,ja:ja||'',h:x.h})}));
+  const seen=new Set();items=all.filter(i=>!seen.has(i.en)&&seen.add(i.en));
+ }
+ return items;
+}
+function showDrill(reset){
+ clearTimeout(timer);
+ if(reset)di=0;
+ list=buildList();
+ const r=$('res');r.style.display='none';
+ if(!list.length){$('dh').textContent='🎉 苦手はありません';$('dj').textContent='';$('dt').textContent='—';$('dt').classList.remove('blur');return}
+ di=((di%list.length)+list.length)%list.length;
+ const it=list[di],m=$('show').value;
+ $('dh').textContent='💡 '+it.h+'　('+(di+1)+'/'+list.length+')';
+ const jaMode=m=='ja'&&it.ja;
+ $('dj').textContent=it.ja&&m!='blur'?it.ja:'';
+ $('dt').textContent=it.en;
+ $('dt').classList.toggle('blur',m=='blur'||jaMode);
+}
+$('dt').onclick=()=>$('dt').classList.toggle('blur');
+cat.onchange=()=>showDrill(true);$('lv').onchange=()=>showDrill(true);$('show').onchange=()=>showDrill();$('weakOnly').onchange=()=>showDrill(true);
+function step(n){clearTimeout(timer);di+=n;showDrill()}
+function speakTarget(){if(list.length)speak(list[di].en)}
+
+function score(t,s){
+ const A=norm(t).split(' '),B=norm(s).split(' ');
+ if(A.length==1){ // 単語1つは文字単位
+  const a=A[0],b=B.join('');const L=Math.max(a.length,b.length);
+  return {pct:L?Math.round((1-ed(a,b)/L)*100):100,miss:[]};
+ }
+ const pool=[...B],miss=[];
+ A.forEach(w=>{const i=pool.indexOf(w);if(i>=0)pool.splice(i,1);else miss.push(w)});
+ return {pct:Math.round((A.length-miss.length)/A.length*100),miss};
+}
+function ed(a,b){const dp=Array.from({length:a.length+1},(_,i)=>[i]);for(let j=1;j<=b.length;j++)dp[0][j]=j;
+ for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)dp[i][j]=Math.min(dp[i-1][j]+1,dp[i][j-1]+1,dp[i-1][j-1]+(a[i-1]==b[j-1]?0:1));
+ return dp[a.length][b.length]}
+
+function onDrill(spoken){
+ if(!list.length)return;
+ const it=list[di],{pct,miss}=score(it.en,spoken),r=$('res');
+ r.style.display='block';$('dt').classList.remove('blur');
+ const ok=pct>=75;
+ r.className='res '+(ok?'ok':'ng');
+ r.textContent=(ok?'⭕ ナイス！':'❌ もう一度！')+' 一致 '+pct+'% ／ 聞き取り: "'+spoken+'"'+(miss.length&&!ok?' ／ 抜け: '+miss.join(', '):'');
+ count();mark(it.en,ok);
+ if(ok){clearTimeout(timer);timer=setTimeout(()=>{di++;showDrill()},1600)}
+}
+
+/* ---------- 入力 ---------- */
+function handle(t){if(!t.trim())return;activeTab=='chat'?onChat(t):onDrill(t)}
+function sendText(){const i=$('ti');handle(i.value);i.value=''}
+$('ti').addEventListener('keydown',e=>{if(e.key=='Enter')sendText()});
+
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let rec=null,recording=false;
+if(!SR){$('st').textContent='※この端末は音声認識非対応です。下の文字入力を使ってください';$('mic').disabled=true}
+else $('mic').onclick=()=>{
+ if(recording){rec&&rec.stop();return}
+ if('speechSynthesis' in window)speechSynthesis.cancel();
+ try{
+  rec=new SR();rec.lang='en-US';rec.interimResults=false;rec.maxAlternatives=1;
+  rec.onstart=()=>{recording=true;$('mic').classList.add('rec');$('mic').textContent='⏹️ 聞いています…';$('st').textContent='英語で話してください'};
+  rec.onend=()=>{recording=false;$('mic').classList.remove('rec');$('mic').textContent='🎤 声を出して話す'};
+  rec.onerror=e=>{$('st').textContent='エラー: '+e.error+'（もう一度どうぞ）'};
+  rec.onresult=e=>{const t=e.results[0][0].transcript;$('st').textContent='認識: "'+t+'"';handle(t)};
+  rec.start();
+ }catch(err){$('st').textContent='マイク起動エラー: '+err.message}
+};
+
+stats();
+</script>
+</body>
+</html>
